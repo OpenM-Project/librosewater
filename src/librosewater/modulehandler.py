@@ -1,6 +1,6 @@
 import os
 import win32process
-from .exceptions import *
+from . import *
 
 def wait_for_module(process: int, module_name: str, ignore_reserror: bool = True) -> tuple:
     """
