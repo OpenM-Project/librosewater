@@ -24,11 +24,11 @@ import ctypes
 import librosewater
 
 PID = ... # You can locate this using psutil
-process_handle = ctypes.windll.kernel32.OpenProcess(librosewater.PROCESS_ALL_ACCESS, False, process.pid)
+process_handle = ctypes.windll.kernel32.OpenProcess(librosewater.PROCESS_ALL_ACCESS, False, PID)
 
 # Get module address and path
 module_address, module_path = librosewater.modulehandler.wait_for_module(process_handle, "Windows.ApplicationModel.Store.dll")
-module_size = os.stat(store_module[1]).st_size
+module_size = os.stat(module_path).st_size
 
 # Dump module to variable
 template = f"Dumping Windows.ApplicationModel.Store module: %s/{module_size}"
