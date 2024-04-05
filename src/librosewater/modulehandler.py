@@ -31,7 +31,7 @@ def wait_for_module(process: int, module_name: str, ignore_reserror: bool = True
                 return (md, name)
 
 def dump_module(process: int, module: int, size: int,
-                chunksize: int = 10240, progress: str = '') -> tuple:
+                chunksize: int = 12288, progress: str = '') -> tuple:
     """
     Dumps module from process memory, then returns
     as much dumped data as possible.
@@ -40,7 +40,7 @@ def dump_module(process: int, module: int, size: int,
     process: int: Process handle for using in pywin32.
     module: int: Module address for module.
     size: int: Size of module to be dumped.
-    chunksize: int = 10240: Chunk size for dumping memory.
+    chunksize: int = 12288: Chunk size for dumping memory.
     Lower values can read more memory, but higher values
     are faster to run. Recommended to use default value.
     progress: str = '': Format string for byte progress.

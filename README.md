@@ -22,6 +22,8 @@ In this small example, we will:
 import os
 import ctypes
 import librosewater
+import librosewater.inject
+import librosewater.modulehandler
 
 PID = ... # You can locate this using psutil
 process_handle = ctypes.windll.kernel32.OpenProcess(librosewater.PROCESS_ALL_ACCESS, False, PID)
@@ -32,7 +34,7 @@ module_size = os.stat(module_path).st_size
 
 # Dump module to variable
 template = f"Dumping Windows.ApplicationModel.Store module: %s/{module_size}"
-data = librosewater.modulehandler.dump_module(process_handle, module_address, module_size, progress=template) # returns as much data as it can
+data_length, data = librosewater.modulehandler.dump_module(process_handle, module_address, module_size, progress=template) # returns as much data as it can
 
 # Inject new module data
 new_data = data.replace(b"\x00", b"")
