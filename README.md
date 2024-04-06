@@ -44,7 +44,7 @@ librosewater.inject.inject_module(process_handle, module_address, new_data)
 ## :page_with_curl: License
 All code and assets are licensed under GNU AGPLv3.
 
-## :technologist: Support
+## :computer: Support
 
 If you don't understand some stuff in the documentation, or you're experiencing problems, or you just have a few questions, please join our [Discord][discord], or make an issue on the issues page of the GitHub repo.
 
