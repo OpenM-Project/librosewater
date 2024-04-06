@@ -9,7 +9,7 @@ Installation is done through `pip`:
 ```
 pip install git+https://github.com/OpenM-Project/librosewater.git
 ```
-:warning: **WARNING**: This will require you to have `git` in your `PATH`.
+:warning: **WARNING**: This will require you to have <a href="https://gitforwindows.org/">`git`</a> in your `PATH`.
 
 ## :zap: Example
 In this small example, we will:
