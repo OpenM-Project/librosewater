@@ -46,6 +46,6 @@ All code and assets are licensed under GNU AGPLv3.
 
 ## :computer: Support
 
-If you don't understand some stuff in the documentation, or you're experiencing problems, or you just have a few questions, please join our [Discord][discord], or make an issue on the issues page of the GitHub repo.
+If you don't understand stuff in the documentation, or you're experiencing problems, or you just have a few questions, please join our [Discord][discord], or make an issue on the issues page of the GitHub repo.
 
 [discord]: https://dsc.gg/openm
