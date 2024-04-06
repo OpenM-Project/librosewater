@@ -4,12 +4,19 @@
 
 -----
 
+## :computer: Support
+The library only works on Windows for now, but cross-platform support is planned. ~~Don't look forward to it, though.~~
+
+For all support needed to this library, you can open an issue!
+And you can join our [Discord](https://dsc.gg/openm "OpenM Community") server
+for further support needed.
+
 ## :inbox_tray: Install
 Installation is done through `pip`:
 ```
 pip install git+https://github.com/OpenM-Project/librosewater.git
 ```
-:warning: **WARNING**: This will require you to have <a href="https://git-scm.com/downloads">`git`</a> in your `PATH`.
+:warning: **WARNING**: This will require you to have [`git`](https://git-scm.com/downloads) in your `PATH`.
 
 ## :zap: Example
 In this small example, we will:
@@ -43,9 +50,3 @@ librosewater.inject.inject_module(process_handle, module_address, new_data)
 
 ## :page_with_curl: License
 All code and assets are licensed under GNU AGPLv3.
-
-## :computer: Support
-
-If you don't understand stuff in the documentation, or you're experiencing problems, or you just have a few questions, please join our [Discord][discord], or make an issue on the issues page of the GitHub repo.
-
-[discord]: https://dsc.gg/openm
