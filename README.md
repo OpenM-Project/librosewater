@@ -48,7 +48,6 @@ process_handle = ctypes.windll.kernel32.OpenProcess(librosewater.PROCESS_ALL_ACC
 
 # Get module address and path
 module_address, module_path = librosewater.module.wait_for_module(process_handle, "Windows.ApplicationModel.Store.dll")
-module_size = os.stat(module_path).st_size
 
 # Dump module to variable
 data_length, data = librosewater.module.dump_module(process_handle, module_address)
