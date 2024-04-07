@@ -4,6 +4,18 @@
 
 -----
 
+## :construction: Status
+The project is going a rewrite at the moment, and you can expect things to break.
+
+All users migrating from 0.1.x should take a look at the new example to adapt their code.
+
+Current changes:
+- Chunksize has been removed
+- Partially migrated to ctypes *(from pywin32)*
+- Renamed modulehandler to module
+- Moved injection handler to module
+- Added new Exception classes
+
 ## :computer: Support
 The library only works on Windows for now, but cross-platform support is planned. ~~Don't look forward to it, though.~~
 
@@ -29,23 +41,21 @@ In this small example, we will:
 import os
 import ctypes
 import librosewater
-import librosewater.inject
-import librosewater.modulehandler
+import librosewater.module
 
 PID = ... # You can locate this using psutil
 process_handle = ctypes.windll.kernel32.OpenProcess(librosewater.PROCESS_ALL_ACCESS, False, PID)
 
 # Get module address and path
-module_address, module_path = librosewater.modulehandler.wait_for_module(process_handle, "Windows.ApplicationModel.Store.dll")
+module_address, module_path = librosewater.module.wait_for_module(process_handle, "Windows.ApplicationModel.Store.dll")
 module_size = os.stat(module_path).st_size
 
 # Dump module to variable
-template = f"Dumping Windows.ApplicationModel.Store module: %s/{module_size}"
-data_length, data = librosewater.modulehandler.dump_module(process_handle, module_address, module_size, progress=template) # returns as much data as it can
+data_length, data = librosewater.module.dump_module(process_handle, module_address)
 
 # Inject new module data
 new_data = data.replace(b"\x00", b"")
-librosewater.inject.inject_module(process_handle, module_address, new_data)
+librosewater.module.inject_module(process_handle, module_address, new_data)
 ```
 
 ## :page_with_curl: License
