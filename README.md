@@ -10,6 +10,8 @@ The project is going a rewrite at the moment, and you can expect things to break
 All users migrating from 0.1.x should take a look at the new example to adapt their code.
 
 Current changes:
+- pywin32 removed
+- modulelist_num arg added to dump_module function
 - Chunksize has been removed
 - Partially migrated to ctypes *(from pywin32)*
 - Renamed modulehandler to module
@@ -38,7 +40,6 @@ In this small example, we will:
 - Inject patched module into memory
 
 ```py
-import os
 import ctypes
 import librosewater
 import librosewater.module

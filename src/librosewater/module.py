@@ -1,7 +1,6 @@
 import os
 import ctypes
 from ctypes import wintypes
-import win32process
 from . import *
 
 class MODULEINFO(ctypes.Structure):
@@ -14,7 +13,8 @@ class MODULEINFO(ctypes.Structure):
 kernel32 = ctypes.windll.kernel32
 psapi = ctypes.windll.psapi
 
-def wait_for_module(process: int, module_name: str, ignore_reserror: bool = True) -> tuple:
+def wait_for_module(process: int, module_name: str,
+    ignore_reserror: bool = True, modulelist_num: int = 3) -> tuple:
     """
     Blocking function to wait for a module to load.
 
@@ -26,21 +26,32 @@ def wait_for_module(process: int, module_name: str, ignore_reserror: bool = True
     errors. This is highly recommended to leave as default,
     first stages of loading in Minecraft can raise a lot of
     these resolution errors.
+    modulelist_num: int = 3: Multiplier for module list.
+    Gets multiplied by 512 bytes and used as module list
+    size. Change this if your module doesn't show up for
+    any reason, should be fine for most apps
 
     Returns tuple class
     (module_address, module_path)
     """
     module = None
     while not module:
-        modules = win32process.EnumProcessModulesEx(process)
-        for md in modules:
-            try:
-                name = win32process.GetModuleFileNameEx(process, md)
-            except win32process.error as ex:
-                if not ignore_reserror:
-                    raise ex
-            if os.path.basename(name) == module_name:
-                return (md, name)
+        modulelist_size = 512 * modulelist_num
+        modulelist = (wintypes.HMODULE * modulelist_size)()
+        if not psapi.EnumProcessModulesEx(process, ctypes.byref(modulelist),
+                modulelist_size, ctypes.byref(wintypes.DWORD()), LIST_MODULES_ALL):
+            error = ctypes.windll.kernel32.GetLastError()
+            raise QueryError("module enum query fail, EnumProcessModulesEx return %s" % error)
+        for md in modulelist:
+            if not md:
+                continue
+            name = ctypes.create_unicode_buffer(MAX_PATH)
+            if not psapi.GetModuleFileNameExW(process,
+                    ctypes.c_int64(md), name, MAX_PATH):
+                error = ctypes.windll.kernel32.GetLastError()
+                raise QueryError("module filename query fail, GetModuleFileNameExW return %s" % error)
+            if os.path.basename(name.value) == module_name:
+                return (md, name.value)
 
 def dump_module(process: int, module: int) -> tuple:
     """
