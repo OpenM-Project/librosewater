@@ -14,7 +14,7 @@ kernel32 = ctypes.windll.kernel32
 psapi = ctypes.windll.psapi
 
 def wait_for_module(process: int, module_name: str,
-    ignore_reserror: bool = True, modulelist_num: int = 3) -> tuple:
+    modulelist_num: int = 3) -> tuple:
     """
     Blocking function to wait for a module to load.
 
@@ -22,10 +22,6 @@ def wait_for_module(process: int, module_name: str,
     process: int: Process handle for using in pywin32.
     module_name: str: Name of the module file. This will be
     compared to os.path.basepath function result.
-    ignore_reserror: bool = True: Ignore module resolution
-    errors. This is highly recommended to leave as default,
-    first stages of loading in Minecraft can raise a lot of
-    these resolution errors.
     modulelist_num: int = 3: Multiplier for module list.
     Gets multiplied by 512 bytes and used as module list
     size. Change this if your module doesn't show up for
@@ -48,10 +44,7 @@ def wait_for_module(process: int, module_name: str,
             name = ctypes.create_unicode_buffer(MAX_PATH)
             if not psapi.GetModuleFileNameExW(process,
                     ctypes.c_int64(md), name, MAX_PATH):
-                if ignore_reserror:
-                    continue
-                error = ctypes.windll.kernel32.GetLastError()
-                raise QueryError("module filename query fail, GetModuleFileNameExW return %s" % error)
+                continue
             if os.path.basename(name.value) == module_name:
                 return (md, name.value)
 

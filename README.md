@@ -12,6 +12,7 @@ All users migrating from 0.1.x should take a look at the new example to adapt th
 Current changes:
 - pywin32 removed
 - modulelist_num arg added to dump_module function
+- ignore_reserror arg has been removed from wait_for_module function
 - Chunksize has been removed
 - Partially migrated to ctypes *(from pywin32)*
 - Renamed modulehandler to module
