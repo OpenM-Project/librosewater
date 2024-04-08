@@ -48,6 +48,8 @@ def wait_for_module(process: int, module_name: str,
             name = ctypes.create_unicode_buffer(MAX_PATH)
             if not psapi.GetModuleFileNameExW(process,
                     ctypes.c_int64(md), name, MAX_PATH):
+                if ignore_reserror:
+                    continue
                 error = ctypes.windll.kernel32.GetLastError()
                 raise QueryError("module filename query fail, GetModuleFileNameExW return %s" % error)
             if os.path.basename(name.value) == module_name:
