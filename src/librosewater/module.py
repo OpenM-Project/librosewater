@@ -36,8 +36,7 @@ def wait_for_module(process: int, module_name: str,
         modulelist = (wintypes.HMODULE * modulelist_size)()
         if not psapi.EnumProcessModulesEx(process, ctypes.byref(modulelist),
                 modulelist_size, ctypes.byref(wintypes.DWORD()), LIST_MODULES_ALL):
-            error = ctypes.windll.kernel32.GetLastError()
-            raise QueryError("module enum query fail, EnumProcessModulesEx return %s" % error)
+            continue
         for md in modulelist:
             if not md:
                 continue
