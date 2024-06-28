@@ -22,9 +22,7 @@ Current changes:
 ## :computer: Support
 The library only works on Windows for now, but cross-platform support is planned. ~~Don't look forward to it, though.~~
 
-For all support needed to this library, you can open an issue!
-And you can join our [Discord](https://dsc.gg/openm "OpenM Community") server
-for further support needed.
+For all support needed to this library, you can open an [issue](https://github.com/OpenM-Project/librosewater/issues/), or you can join our [Discord](https://dsc.gg/openmproject "OpenM Community") server for any further support needed.
 
 ## :inbox_tray: Install
 Installation is done through `pip`:
