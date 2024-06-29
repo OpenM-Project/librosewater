@@ -4,23 +4,8 @@
 
 -----
 
-## :construction: Status
-The project is going a rewrite at the moment, and you can expect things to break.
-
-All users migrating from 0.1.x should take a look at the new example to adapt their code.
-
-Current changes:
-- pywin32 removed
-- modulelist_num arg added to dump_module function
-- ignore_reserror arg has been removed from wait_for_module function
-- Chunksize has been removed
-- Partially migrated to ctypes *(from pywin32)*
-- Renamed modulehandler to module
-- Moved injection handler to module
-- Added new Exception classes
-
 ## :computer: Support
-The library only works on Windows for now, but cross-platform support is planned. ~~Don't look forward to it, though.~~
+The library only works on Windows for now, but cross-platform support may be added in the future. ~~Don't look forward to it, though.~~
 
 For all support needed to this library, you can open an [issue](https://github.com/OpenM-Project/librosewater/issues/), or you can join our [Discord](https://dsc.gg/openmproject "OpenM Community") server for any further support needed.
 

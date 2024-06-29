@@ -10,49 +10,51 @@ class MODULEINFO(ctypes.Structure):
         ("EntryPoint", ctypes.c_void_p),
     ]
 
-kernel32 = ctypes.windll.kernel32
-psapi = ctypes.windll.psapi
-
-def wait_for_module(process: int, module_name: str,
-    modulelist_num: int = 3) -> tuple:
+def wait_for_module(process: int, module_name: str) -> tuple:
     """
     Blocking function to wait for a module to load.
 
     Arguments:
-    process: int: Process handle for using in pywin32.
+    process: int: Process handle.
     module_name: str: Name of the module file. This will be
     compared to os.path.basepath function result.
-    modulelist_num: int = 3: Multiplier for module list.
-    Gets multiplied by 512 bytes and used as module list
-    size. Change this if your module doesn't show up for
-    any reason, should be fine for most apps
 
     Returns tuple class
     (module_address, module_path)
     """
     module = None
     while not module:
-        modulelist_size = 512 * modulelist_num
-        modulelist = (wintypes.HMODULE * modulelist_size)()
-        if not psapi.EnumProcessModulesEx(process, ctypes.byref(modulelist),
-                modulelist_size, ctypes.byref(wintypes.DWORD()), LIST_MODULES_ALL):
-            continue
-        for md in modulelist:
-            if not md:
+        count = 128
+        while True:
+            modulelist = (wintypes.HMODULE * count)()
+            modulelist_size = ctypes.sizeof(modulelist)
+            cb_needed = wintypes.DWORD()
+            if not psapi.EnumProcessModulesEx(process, ctypes.byref(modulelist),
+                    modulelist_size, ctypes.byref(cb_needed), LIST_MODULES_ALL):
+                status = wintypes.DWORD()
+                if kernel32.GetExitCodeProcess(process, ctypes.byref(status)):
+                    if status.value != 259: # STILL_ACTIVE: 259
+                        raise ProcessClosedError("process is no longer active, exit code %s" % status.value)
                 continue
+            if cb_needed.value < modulelist_size:
+                break
+            else:
+                count *= 2
+
+        for module in filter(None, modulelist):
             name = ctypes.create_unicode_buffer(MAX_PATH)
             if not psapi.GetModuleFileNameExW(process,
-                    ctypes.c_int64(md), name, MAX_PATH):
+                    ctypes.c_int64(module), name, MAX_PATH):
                 continue
             if os.path.basename(name.value) == module_name:
-                return (md, name.value)
+                return (module, name.value)
 
 def dump_module(process: int, module: int) -> tuple:
     """
     Dumps module from process memory.
 
     Arguments:
-    process: int: Process handle for using in pywin32.
+    process: int: Process handle.
     module: int: Module address for module.
 
     Returns tuple class
@@ -61,12 +63,12 @@ def dump_module(process: int, module: int) -> tuple:
     module_info = MODULEINFO()
     if not psapi.GetModuleInformation(process,
             ctypes.c_int64(module), ctypes.byref(module_info)):
-        error = ctypes.windll.kernel32.GetLastError()
+        error = kernel32.GetLastError()
         raise QueryError("module info query fail, GetModuleInformation return %s" % error)
     dump = ctypes.create_string_buffer(module_info.SizeOfImage)
     if not kernel32.ReadProcessMemory(process, ctypes.c_int64(module_info.lpBaseOfDll),
             ctypes.byref(dump), module_info.SizeOfImage, 0):
-        error = ctypes.windll.kernel32.GetLastError()
+        error = kernel32.GetLastError()
         raise ReadWriteError("read error, ReadProcessMemory return %s" % error)
     return (module_info.SizeOfImage, dump.raw)
 
@@ -75,7 +77,7 @@ def inject_module(process: int, module: int, data: bytes) -> None:
     Injects module into given address.
 
     Arguments:
-    process: int: Process handle for using in pywin32.
+    process: int: Process handle.
     module: int: Module address for module.
     data: bytes: Bytes for injected module.
 
@@ -84,11 +86,18 @@ def inject_module(process: int, module: int, data: bytes) -> None:
     Raises ReadWriteError on write error
     """
     old_security = ctypes.c_int64(PAGE_EXECUTE_READ)
-    if not ctypes.windll.kernel32.VirtualProtectEx(process, ctypes.c_int64(module),
+    if not kernel32.VirtualProtectEx(process, ctypes.c_int64(module),
             len(data), PAGE_EXECUTE_READWRITE, ctypes.byref(old_security)):
-        error = ctypes.windll.kernel32.GetLastError()
+        error = kernel32.GetLastError()
         raise ProtectBypassError("security error, VirtualProtectEx return %s" % error)
-    if not ctypes.windll.kernel32.WriteProcessMemory(process,
+    if not kernel32.WriteProcessMemory(process,
             ctypes.c_int64(module), data, len(data), 0):
-        error = ctypes.windll.kernel32.GetLastError()
+        error = kernel32.GetLastError()
         raise ReadWriteError("write error, WriteProcessMemory return %s" % error)
+    
+    # Write old security back on. If it fails, it's
+    # not the end of the world but it's good to set
+    # the old security back just in case some other
+    # piece of code does stuff with it.
+    kernel32.VirtualProtectEx(process, ctypes.c_int64(module),
+        len(data), old_security.value, ctypes.byref(ctypes.c_int64()))
