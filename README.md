@@ -18,7 +18,8 @@ pip install git+https://github.com/OpenM-Project/librosewater.git
 
 ## :zap: Example
 In this small example, we will:
-- Open a process
+- Wait for a process to start
+- Open the process
 - Get the address and path of a module loaded into the process
 - Dump the module and patch it
 - Inject patched module into memory
@@ -27,18 +28,19 @@ In this small example, we will:
 import ctypes
 import librosewater
 import librosewater.module
+import librosewater.process
 
-PID = ... # You can locate this using psutil
+PID = librosewater.process.wait_for_process("my_app.exe")
 process_handle = ctypes.windll.kernel32.OpenProcess(librosewater.PROCESS_ALL_ACCESS, False, PID)
 
 # Get module address and path
-module_address, module_path = librosewater.module.wait_for_module(process_handle, "Windows.ApplicationModel.Store.dll")
+module_address, module_path = librosewater.module.wait_for_module(process_handle, "super_secret_stuff.dll")
 
 # Dump module to variable
 data_length, data = librosewater.module.dump_module(process_handle, module_address)
 
 # Inject new module data
-new_data = data.replace(b"\x00", b"")
+new_data = data.replace(b"\x00", b"\x02")
 librosewater.module.inject_module(process_handle, module_address, new_data)
 ```
 
