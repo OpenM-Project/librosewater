@@ -72,7 +72,7 @@ def dump_module(process: int, module: int) -> tuple:
         raise ReadWriteError("read error, ReadProcessMemory return %s" % error)
     return (module_info.SizeOfImage, dump.raw)
 
-def inject_module(process: int, module: int, data: bytes) -> None:
+def inject_module(process: int, module: int, data: bytes, ignore_security_fix: bool = False) -> None:
     """
     Injects module into given address.
 
@@ -80,6 +80,9 @@ def inject_module(process: int, module: int, data: bytes) -> None:
     process: int: Process handle.
     module: int: Module address for module.
     data: bytes: Bytes for injected module.
+    ignore_security_fix: bool = False: Don't write back
+    the old security status of the module after writing
+    security as PAGE_EXECUTE_READWRITE.
 
     Returns None
     Raises ProtectBypassError on protection bypass fail
@@ -99,5 +102,10 @@ def inject_module(process: int, module: int, data: bytes) -> None:
     # not the end of the world but it's good to set
     # the old security back just in case some other
     # piece of code does stuff with it.
-    kernel32.VirtualProtectEx(process, ctypes.c_int64(module),
-        len(data), old_security.value, ctypes.byref(ctypes.c_int64()))
+    #
+    # However, writing the old security sometimes
+    # crashes some time-critical applications. In
+    # that case, don't write it back.
+    if not ignore_security_fix:
+        kernel32.VirtualProtectEx(process, ctypes.c_int64(module),
+            len(data), old_security.value, ctypes.byref(ctypes.c_int64()))
