@@ -10,4 +10,4 @@ PAGE_EXECUTE_READWRITE = 0x40
 kernel32 = ctypes.windll.kernel32
 psapi = ctypes.windll.psapi
 
-__version__ = "0.3.1"
+__version__ = "0.3.2"

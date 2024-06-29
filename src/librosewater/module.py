@@ -22,8 +22,7 @@ def wait_for_module(process: int, module_name: str) -> tuple:
     Returns tuple class
     (module_address, module_path)
     """
-    module = None
-    while not module:
+    while True:
         count = 128
         while True:
             modulelist = (wintypes.HMODULE * count)()
