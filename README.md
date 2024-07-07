@@ -7,12 +7,12 @@
 ## :computer: Support
 The library only works on Windows for now, but cross-platform support may be added in the future. ~~Don't look forward to it, though.~~
 
-For all support needed to this library, you can open an [issue](https://github.com/OpenM-Project/librosewater/issues/), or you can join our [Discord](https://dsc.gg/openmproject "OpenM Community") server or [subreddit](https://www.reddit.com/r/openmproject/) for any further support needed.
+For all support needed to this library, you can open an [issue](https://github.com/wavEye-Project/librosewater/issues/).
 
 ## :inbox_tray: Install
 Installation is done through `pip`:
 ```
-pip install git+https://github.com/OpenM-Project/librosewater.git
+pip install git+https://github.com/wavEye-Project/librosewater.git
 ```
 :warning: **WARNING**: This will require you to have [`git`](https://git-scm.com/downloads) in your `PATH`.
 
